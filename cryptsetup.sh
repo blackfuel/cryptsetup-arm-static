@@ -11,28 +11,39 @@ MAKE="make -j`nproc`"
 # LVM2 # ####################################################################
 ######## ####################################################################
 
-mkdir $SRC/lvm2 && cd $SRC/lvm2
-wget http://http.debian.net/debian/pool/main/l/lvm2/lvm2_2.02.142.orig.tar.xz
-tar xvJf lvm2_2.02.142.orig.tar.xz
-cd lvm2-2.02.142
+mkdir -p $SRC/lvm2 && cd $SRC/lvm2
+DL="LVM2.2.02.165.tgz"
+FOLDER="${DL%.tgz*}"
+URL="ftp://sources.redhat.com/pub/lvm2/releases/$DL"
+if [ ! -f "$FOLDER/__package_installed" ]; then
+[ ! -f "$DL" ] && wget $URL
+[ ! -d "$FOLDER" ] && tar xzvf $DL
+cd $FOLDER
 
 ./configure \
 --prefix=/mmc \
---sysconfdir=/mmc/etc \
+--with-confdir=/mmc/etc \
+--with-default-system-dir=/mmc/etc/lvm \
 --enable-static_link \
 --disable-nls
 
 $MAKE LIBS="-lm -lpthread -luuid"
 make install
+touch __package_installed
+fi
 
 ######## ####################################################################
 # POPT # ####################################################################
 ######## ####################################################################
 
-mkdir $SRC/popt && cd $SRC/popt
-wget http://rpm5.org/files/popt/popt-1.16.tar.gz
-tar zxvf popt-1.16.tar.gz
-cd popt-1.16
+mkdir -p $SRC/popt && cd $SRC/popt
+DL="popt-1.16.tar.gz"
+FOLDER="${DL%.tar.gz*}"
+URL="http://rpm5.org/files/popt/$DL"
+if [ ! -f "$FOLDER/__package_installed" ]; then
+[ ! -f "$DL" ] && wget $URL
+[ ! -d "$FOLDER" ] && tar xzvf $DL
+cd $FOLDER
 
 ./configure \
 --prefix=/mmc \
@@ -42,15 +53,21 @@ cd popt-1.16
 
 $MAKE
 make install
+touch __package_installed
+fi
 
 ################ ############################################################
 # LIBGPG-ERROR # ############################################################
 ################ ############################################################
 
-mkdir $SRC/libgpg-error && cd $SRC/libgpg-error
-wget https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.21.tar.bz2
-tar xvjf libgpg-error-1.21.tar.bz2
-cd libgpg-error-1.21
+mkdir -p $SRC/libgpg-error && cd $SRC/libgpg-error
+DL="libgpg-error-1.25.tar.bz2"
+FOLDER="${DL%.tar.bz2*}"
+URL="https://gnupg.org/ftp/gcrypt/libgpg-error/$DL"
+if [ ! -f "$FOLDER/__package_installed" ]; then
+[ ! -f "$DL" ] && wget $URL
+[ ! -d "$FOLDER" ] && tar xvjf $DL
+cd $FOLDER
 
 ./configure \
 --prefix=/mmc \
@@ -60,40 +77,57 @@ cd libgpg-error-1.21
 
 $MAKE
 make install
+touch __package_installed
+fi
 
 ########## ##################################################################
 # GCRYPT # ##################################################################
 ########## ##################################################################
 
-mkdir $SRC/gcrypt && cd $SRC/gcrypt
-wget https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.6.4.tar.bz2
-tar xvjf libgcrypt-1.6.4.tar.bz2
-cd libgcrypt-1.6.4
+mkdir -p $SRC/gcrypt && cd $SRC/gcrypt
+DL="libgcrypt-1.6.6.tar.bz2"
+FOLDER="${DL%.tar.bz2*}"
+URL="https://gnupg.org/ftp/gcrypt/libgcrypt/$DL"
+if [ ! -f "$FOLDER/__package_installed" ]; then
+[ ! -f "$DL" ] && wget $URL
+[ ! -d "$FOLDER" ] && tar xvjf $DL
+cd $FOLDER
 
 ./configure \
 --prefix=/mmc \
 --enable-static \
---disable-shared
+--disable-shared \
+--disable-amd64-as-feature-detection \
+--with-gpg-error-prefix=/mmc
 
 $MAKE
 make install
+touch __package_installed
+fi
 
 ############## ##############################################################
 # CRYPTSETUP # ##############################################################
 ############## ##############################################################
 
-mkdir $SRC/cryptsetup && cd $SRC/cryptsetup
-wget https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/cryptsetup-1.7.0.tar.xz
-tar xvJf cryptsetup-1.7.0.tar.xz
-cd cryptsetup-1.7.0
+mkdir -p $SRC/cryptsetup && cd $SRC/cryptsetup
+DL="cryptsetup-1.7.3.tar.xz"
+FOLDER="${DL%.tar.xz*}"
+URL="https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/$DL"
+if [ ! -f "$FOLDER/__package_installed" ]; then
+[ ! -f "$DL" ] && wget $URL
+[ ! -d "$FOLDER" ] && tar xvJf $DL
+cd $FOLDER
 
 LIBS="-lpthread" \
 ./configure \
 --prefix=/mmc \
---disable-kernel_crypto \
 --disable-nls \
 --enable-static \
 --disable-shared \
 --enable-static-cryptsetup
 
 $MAKE
+make install
+touch __package_installed
+fi
+
