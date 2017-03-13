@@ -1,4 +1,5 @@
 #!/mmc/bin/bash
+PATH_CMD="$(readlink -f $0)"
 
 set -e
 set -x
@@ -109,6 +110,10 @@ fi
 # CRYPTSETUP # ##############################################################
 ############## ##############################################################
 
+# compiling without "--disable-kernel-crypto" requires a header file: linux/if_alg.h
+HEADER_KERNEL_CRYPTO="${PATH_CMD%/*}/if_alg.h"
+[ ! -f "/mmc/include/linux/if_alg.h" ] && [ -f "$HEADER_KERNEL_CRYPTO" ] && cp -p "$HEADER_KERNEL_CRYPTO" /mmc/include/linux
+
 mkdir -p $SRC/cryptsetup && cd $SRC/cryptsetup
 DL="cryptsetup-1.7.3.tar.xz"
 FOLDER="${DL%.tar.xz*}"
@@ -124,7 +129,8 @@ LIBS="-lpthread" \
 --disable-nls \
 --enable-static \
 --disable-shared \
---enable-static-cryptsetup
+--enable-static-cryptsetup \
+--enable-cryptsetup-reencrypt
 
 $MAKE
 make install
