@@ -13,7 +13,7 @@ MAKE="make -j`nproc`"
 ######## ####################################################################
 
 mkdir -p $SRC/lvm2 && cd $SRC/lvm2
-DL="LVM2.2.02.165.tgz"
+DL="LVM2.2.02.168.tgz"
 FOLDER="${DL%.tgz*}"
 URL="ftp://sources.redhat.com/pub/lvm2/releases/$DL"
 if [ ! -f "$FOLDER/__package_installed" ]; then
@@ -62,7 +62,7 @@ fi
 ################ ############################################################
 
 mkdir -p $SRC/libgpg-error && cd $SRC/libgpg-error
-DL="libgpg-error-1.25.tar.bz2"
+DL="libgpg-error-1.27.tar.bz2"
 FOLDER="${DL%.tar.bz2*}"
 URL="https://gnupg.org/ftp/gcrypt/libgpg-error/$DL"
 if [ ! -f "$FOLDER/__package_installed" ]; then
@@ -86,7 +86,7 @@ fi
 ########## ##################################################################
 
 mkdir -p $SRC/gcrypt && cd $SRC/gcrypt
-DL="libgcrypt-1.6.6.tar.bz2"
+DL="libgcrypt-1.7.6.tar.bz2"
 FOLDER="${DL%.tar.bz2*}"
 URL="https://gnupg.org/ftp/gcrypt/libgcrypt/$DL"
 if [ ! -f "$FOLDER/__package_installed" ]; then
