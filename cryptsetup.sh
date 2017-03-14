@@ -7,6 +7,7 @@ set -x
 mkdir -p /mmc/src/cryptsetup
 SRC=/mmc/src/cryptsetup
 MAKE="make -j`nproc`"
+PATH=/mmc/usr/bin:/mmc/usr/local/sbin:/mmc/usr/local/bin:/mmc/usr/sbin:/mmc/usr/bin:/mmc/sbin:/mmc/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 ######## ####################################################################
 # LVM2 # ####################################################################
