@@ -35,15 +35,6 @@ PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 --enable-static_link \
 --disable-nls
 
-# build dynamic library
-LIBS="-lpthread -luuid -lrt" \
-PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
-./configure \
---prefix=/mmc \
---with-confdir=/mmc/etc \
---with-default-system-dir=/mmc/etc/lvm \
---disable-nls
-
 cp -p "libdm/libdevmapper.pc" /mmc/lib/pkgconfig
 pushd .
 cd /mmc/lib/pkgconfig
