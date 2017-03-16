@@ -8,7 +8,8 @@ REBUILD=1
 mkdir -p /mmc/src/cryptsetup
 SRC=/mmc/src/cryptsetup
 MAKE="make -j`nproc`"
-PATH=/mmc/usr/bin:/mmc/usr/local/sbin:/mmc/usr/local/bin:/mmc/usr/sbin:/mmc/usr/bin:/mmc/sbin:/mmc/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+#PATH=/mmc/usr/bin:/mmc/usr/local/sbin:/mmc/usr/local/bin:/mmc/usr/sbin:/mmc/usr/bin:/mmc/sbin:/mmc/bin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PATH=/mmc/usr/bin:/mmc/usr/local/sbin:/mmc/usr/local/bin:/mmc/usr/sbin:/mmc/usr/bin:/mmc/sbin:/mmc/bin
 
 ######## ####################################################################
 # LVM2 # ####################################################################
@@ -24,7 +25,9 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xzvf $DL
 cd $FOLDER
 
-# build static libraries
+# build static library
+LIBS="-lpthread -luuid -lrt" \
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
 --prefix=/mmc \
 --with-confdir=/mmc/etc \
@@ -32,19 +35,24 @@ cd $FOLDER
 --enable-static_link \
 --disable-nls
 
-$MAKE LIBS="-lm -lpthread -luuid"
-make install
-
-# build dynamic/shared libraries
+# build dynamic library
+LIBS="-lpthread -luuid -lrt" \
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
 --prefix=/mmc \
 --with-confdir=/mmc/etc \
 --with-default-system-dir=/mmc/etc/lvm \
 --disable-nls
 
-$MAKE LIBS="-lm -lpthread -luuid"
-make install
+cp -p "libdm/libdevmapper.pc" /mmc/lib/pkgconfig
+pushd .
+cd /mmc/lib/pkgconfig
+ln -sf libdevmapper.pc devmapper.pc
+popd
 
+LIBS="-luuid -lm" \
+$MAKE device-mapper
+make install_device-mapper
 touch __package_installed
 fi
 
@@ -62,6 +70,7 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xzvf $DL
 cd $FOLDER
 
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
 --prefix=/mmc \
 --enable-static \
@@ -87,6 +96,7 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xvjf $DL
 cd $FOLDER
 
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
 --prefix=/mmc \
 --enable-static \
@@ -112,6 +122,7 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xvjf $DL
 cd $FOLDER
 
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
 --prefix=/mmc \
 --enable-static \
@@ -133,7 +144,7 @@ HEADER_KERNEL_CRYPTO="${PATH_CMD%/*}/if_alg.h"
 [ ! -f "/mmc/include/linux/if_alg.h" ] && [ -f "$HEADER_KERNEL_CRYPTO" ] && cp -p "$HEADER_KERNEL_CRYPTO" /mmc/include/linux
 
 mkdir -p $SRC/cryptsetup && cd $SRC/cryptsetup
-DL="cryptsetup-1.7.3.tar.xz"
+DL="cryptsetup-1.7.4.tar.xz"
 FOLDER="${DL%.tar.xz*}"
 URL="https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/$DL"
 [ "$REBUILD" == "1" ] && rm -rf "$FOLDER"
@@ -142,14 +153,16 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xvJf $DL
 cd $FOLDER
 
-LIBS="-lpthread" \
+LIBS="-lpthread -lssl -lcrypto -lz" \
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
 --prefix=/mmc \
 --disable-nls \
---enable-static \
+--enable-cryptsetup-reencrypt \
+--with-crypto_backend=openssl \
 --enable-shared \
---enable-static-cryptsetup \
---enable-cryptsetup-reencrypt
+--enable-static \
+--enable-static-cryptsetup
 
 $MAKE
 make install
