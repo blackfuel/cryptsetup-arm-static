@@ -25,7 +25,6 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xzvf $DL
 cd $FOLDER
 
-# build static library
 LIBS="-lpthread -luuid -lrt" \
 PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
@@ -130,6 +129,11 @@ fi
 # CRYPTSETUP # ##############################################################
 ############## ##############################################################
 
+# select the crypto backend for cryptsetup
+#CRYPTO_BACKEND="gcrypt"
+#CRYPTO_BACKEND="openssl"
+CRYPTO_BACKEND="nettle"
+
 # compiling without "--disable-kernel-crypto" requires a header file: linux/if_alg.h
 HEADER_KERNEL_CRYPTO="${PATH_CMD%/*}/if_alg.h"
 [ ! -f "/mmc/include/linux/if_alg.h" ] && [ -f "$HEADER_KERNEL_CRYPTO" ] && cp -p "$HEADER_KERNEL_CRYPTO" /mmc/include/linux
@@ -144,6 +148,21 @@ if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -d "$FOLDER" ] && tar xvJf $DL
 cd $FOLDER
 
+if [ "$CRYPTO_BACKEND" == "gcrypt" ]; then
+
+LIBS="-lpthread -lgcrypt" \
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
+./configure \
+--prefix=/mmc \
+--disable-nls \
+--enable-cryptsetup-reencrypt \
+--with-crypto_backend=gcrypt \
+--enable-shared \
+--enable-static \
+--enable-static-cryptsetup
+
+elif [ "$CRYPTO_BACKEND" == "openssl" ]; then
+
 LIBS="-lpthread -lssl -lcrypto -lz" \
 PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 ./configure \
@@ -154,6 +173,21 @@ PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 --enable-shared \
 --enable-static \
 --enable-static-cryptsetup
+
+elif [ "$CRYPTO_BACKEND" == "nettle" ]; then
+
+LIBS="-lpthread -lnettle" \
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
+./configure \
+--prefix=/mmc \
+--disable-nls \
+--enable-cryptsetup-reencrypt \
+--with-crypto_backend=nettle \
+--enable-shared \
+--enable-static \
+--enable-static-cryptsetup
+
+fi
 
 $MAKE
 make install
