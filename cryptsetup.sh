@@ -132,7 +132,8 @@ fi
 # select the crypto backend for cryptsetup
 #CRYPTO_BACKEND="gcrypt"
 #CRYPTO_BACKEND="openssl"
-CRYPTO_BACKEND="nettle"
+#CRYPTO_BACKEND="nettle"
+CRYPTO_BACKEND="kernel"
 
 # compiling without "--disable-kernel-crypto" requires a header file: linux/if_alg.h
 HEADER_KERNEL_CRYPTO="${PATH_CMD%/*}/if_alg.h"
@@ -183,6 +184,19 @@ PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
 --disable-nls \
 --enable-cryptsetup-reencrypt \
 --with-crypto_backend=nettle \
+--enable-shared \
+--enable-static \
+--enable-static-cryptsetup
+
+elif [ "$CRYPTO_BACKEND" == "kernel" ]; then
+
+LIBS="-lpthread" \
+PKG_CONFIG_PATH="/mmc/lib/pkgconfig" \
+./configure \
+--prefix=/mmc \
+--disable-nls \
+--enable-cryptsetup-reencrypt \
+--with-crypto_backend=kernel \
 --enable-shared \
 --enable-static \
 --enable-static-cryptsetup
