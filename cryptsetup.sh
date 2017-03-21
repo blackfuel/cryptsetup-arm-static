@@ -1,10 +1,18 @@
 #!/mmc/bin/bash
+#############################################################################
+# Usage examples:
+#
+# CRYPTO_BACKEND="gcrypt" ./cryptsetup.sh
+# CRYPTO_BACKEND="openssl" ./cryptsetup.sh
+# CRYPTO_BACKEND="nettle" ./cryptsetup.sh
+# CRYPTO_BACKEND="kernel" ./cryptsetup.sh
+#
+#############################################################################
 PATH_CMD="$(readlink -f $0)"
-
 set -e
 set -x
 
-REBUILD=1
+#REBUILD=1
 mkdir -p /mmc/src/cryptsetup
 SRC=/mmc/src/cryptsetup
 MAKE="make -j`nproc`"
@@ -129,25 +137,29 @@ fi
 # CRYPTSETUP # ##############################################################
 ############## ##############################################################
 
-# select the crypto backend for cryptsetup
-#CRYPTO_BACKEND="gcrypt"
-#CRYPTO_BACKEND="openssl"
-#CRYPTO_BACKEND="nettle"
-CRYPTO_BACKEND="kernel"
+if [ -z "$CRYPTO_BACKEND" ]; then
+  # select the crypto backend for cryptsetup
+  #CRYPTO_BACKEND="gcrypt"
+  #CRYPTO_BACKEND="openssl"
+  #CRYPTO_BACKEND="nettle"
+  CRYPTO_BACKEND="kernel"
+fi
+
+mkdir -p "$SRC/cryptsetup" && cd "$SRC/cryptsetup"
+DL="cryptsetup-1.7.4.tar.xz"
+FOLDER="${DL%.tar.xz*}"
+FOLDER_CRYPTO="${FOLDER}-${CRYPTO_BACKEND}"
+URL="https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/$DL"
+[ "$REBUILD_ALL" == "1" ] && rm -rf "$FOLDER_CRYPTO"
+if [ ! -f "$FOLDER_CRYPTO/__package_installed" ]; then
+[ ! -f "$DL" ] && wget $URL
+[ -d "$FOLDER" ] && rm -rf $FOLDER
+[ ! -d "$FOLDER_CRYPTO" ] && tar xvJf $DL && mv $FOLDER $FOLDER_CRYPTO
+cd $FOLDER_CRYPTO
 
 # compiling without "--disable-kernel-crypto" requires a header file: linux/if_alg.h
 HEADER_KERNEL_CRYPTO="${PATH_CMD%/*}/if_alg.h"
 [ ! -f "/mmc/include/linux/if_alg.h" ] && [ -f "$HEADER_KERNEL_CRYPTO" ] && cp -p "$HEADER_KERNEL_CRYPTO" /mmc/include/linux
-
-mkdir -p $SRC/cryptsetup && cd $SRC/cryptsetup
-DL="cryptsetup-1.7.4.tar.xz"
-FOLDER="${DL%.tar.xz*}"
-URL="https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/$DL"
-[ "$REBUILD" == "1" ] && rm -rf "$FOLDER"
-if [ ! -f "$FOLDER/__package_installed" ]; then
-[ ! -f "$DL" ] && wget $URL
-[ ! -d "$FOLDER" ] && tar xvJf $DL
-cd $FOLDER
 
 if [ "$CRYPTO_BACKEND" == "gcrypt" ]; then
 
