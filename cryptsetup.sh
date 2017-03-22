@@ -12,7 +12,7 @@ PATH_CMD="$(readlink -f $0)"
 set -e
 set -x
 
-#REBUILD=1
+#REBUILD_ALL=1
 mkdir -p /mmc/src/cryptsetup
 SRC=/mmc/src/cryptsetup
 MAKE="make -j`nproc`"
@@ -27,7 +27,7 @@ mkdir -p $SRC/lvm2 && cd $SRC/lvm2
 DL="LVM2.2.02.168.tgz"
 FOLDER="${DL%.tgz*}"
 URL="ftp://sources.redhat.com/pub/lvm2/releases/$DL"
-[ "$REBUILD" == "1" ] && rm -rf "$FOLDER"
+[ "$REBUILD_ALL" == "1" ] && rm -rf "$FOLDER"
 if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -f "$DL" ] && wget $URL
 [ ! -d "$FOLDER" ] && tar xzvf $DL
@@ -62,7 +62,7 @@ mkdir -p $SRC/popt && cd $SRC/popt
 DL="popt-1.16.tar.gz"
 FOLDER="${DL%.tar.gz*}"
 URL="http://rpm5.org/files/popt/$DL"
-[ "$REBUILD" == "1" ] && rm -rf "$FOLDER"
+[ "$REBUILD_ALL" == "1" ] && rm -rf "$FOLDER"
 if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -f "$DL" ] && wget $URL
 [ ! -d "$FOLDER" ] && tar xzvf $DL
@@ -88,7 +88,7 @@ mkdir -p $SRC/libgpg-error && cd $SRC/libgpg-error
 DL="libgpg-error-1.27.tar.bz2"
 FOLDER="${DL%.tar.bz2*}"
 URL="https://gnupg.org/ftp/gcrypt/libgpg-error/$DL"
-[ "$REBUILD" == "1" ] && rm -rf "$FOLDER"
+[ "$REBUILD_ALL" == "1" ] && rm -rf "$FOLDER"
 if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -f "$DL" ] && wget $URL
 [ ! -d "$FOLDER" ] && tar xvjf $DL
@@ -114,7 +114,7 @@ mkdir -p $SRC/gcrypt && cd $SRC/gcrypt
 DL="libgcrypt-1.7.6.tar.bz2"
 FOLDER="${DL%.tar.bz2*}"
 URL="https://gnupg.org/ftp/gcrypt/libgcrypt/$DL"
-[ "$REBUILD" == "1" ] && rm -rf "$FOLDER"
+[ "$REBUILD_ALL" == "1" ] && rm -rf "$FOLDER"
 if [ ! -f "$FOLDER/__package_installed" ]; then
 [ ! -f "$DL" ] && wget $URL
 [ ! -d "$FOLDER" ] && tar xvjf $DL
